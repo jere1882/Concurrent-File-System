@@ -1,0 +1,68 @@
+CRE:
+{cre, Filename, Handler}
+
+OPN:
+{handler, Handler, {opn, Filename}}
+{worker,  Worker,  {opn_req, Filename}}
+
+{rworker, Worker,  {opn_res, Filename, not_found}}
+{rworker, Worker,  {opn_res, Filename, Pid}}
+
+Open tracking:
+{track, {opn, Filename, Handler}, H, C, []}
+Open:
+{track, {opened, Filename}, H, _,
+  [{fid, Fid},
+   {handler, Pid}, % To know who opened the file
+   % if I don't own the file:
+   {worker, Pid}, % To know the opener worker
+   {rm_marked, false}]}
+Open request:
+{opn, Filename, Handler}
+Open response:
+{opn, already_opened, {opn, Filename, Handler}}
+{opn, not_found, {opn, Filename, Handler}}
+{opn, Fid, {opn, Filename, Handler}}
+
+<from_handler.hrl>
+{opn, Filename}
+  If file's opened
+    respond to handler ALREADY OPENED
+  else
+    If file exists
+      open it {opened, Filename, Fid, Handler}
+    else
+      track {opn, Filename, Handler}
+      ask other workers {opn, Filename, Handler}
+<from_worker.hrl>
+{opn, Filename, Handler}
+  If file's opened
+    
+
+Opened files are needed by:
+  OPN, CLO, RM, REA, WRT, BYE
+
+openTracked
+  say already opened.
+!openTracked && fileOpened && fileOwned && fileExists
+  close file.
+!openTracked && fileOpened && fileOwned && !fileExists
+  say close to proper worker.
+  close file.
+fileOpened && !fileOwned
+  say not opened by me.
+
+CLO uses Fid, needs UID, if not owned the Pid of
+the worker.
+
+RM uses Filename
+
+REA uses Fid, needs UID, if not owned, the Pid
+of the worker
+
+WRT uses Fid, needs UID, if not owned, the Pid
+of the worker
+
+BYE needs UID.
+
+

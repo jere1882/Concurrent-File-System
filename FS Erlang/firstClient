@@ -1,0 +1,3 @@
+#!/bin/bash
+
+make -f MakefileFirstClient first_client

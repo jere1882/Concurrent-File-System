@@ -1,0 +1,8 @@
+PROJECT = file_system
+PROJECT_DESCRIPTION = New project
+PROJECT_VERSION = 0.0.1
+
+include erlang.mk
+
+SHELL_OPTS = -eval 'client:test()'
+first_client: app shell

@@ -1,0 +1,4 @@
+*.beam
+ebin/file_system.app
+erl_crash.dump
+file_system.d
